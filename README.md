@@ -1,4 +1,4 @@
-# order-outbox-demo
+# outbox-demo
 
 A teaching project for the **Transactional Outbox** pattern with Spring Boot 4, Postgres, RabbitMQ and hexagonal architecture.
 

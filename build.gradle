@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(( findProperty('javaVersion') ?: '25' ) as int)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
 }
 
