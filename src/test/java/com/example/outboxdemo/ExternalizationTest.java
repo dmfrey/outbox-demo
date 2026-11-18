@@ -23,7 +23,7 @@ class ExternalizationTest extends AbstractIntegrationTest {
 
     @Test
     void orderPlacedIsForwardedToTheBroker() {
-        var queue = QueueBuilder.nonDurable( "test.external-consumer" ).build();
+        var queue = QueueBuilder.durable( "test.external-consumer" ).build();
         amqpAdmin.declareQueue( queue );
         amqpAdmin.declareBinding( BindingBuilder.bind( queue ).to( new TopicExchange( "domain.events" ) ).with( "order.placed" ) );
 
