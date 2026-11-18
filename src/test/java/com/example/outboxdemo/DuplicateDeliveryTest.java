@@ -33,12 +33,18 @@ class DuplicateDeliveryTest extends AbstractIntegrationTest {
         }
 
         await().atMost( Duration.ofSeconds( 20 ) ).untilAsserted( () ->
-                assertThat( emailSubjectsFor( "carol@example.com" ) ).hasSize( 1 ) );
+                assertThat( receivedEmails() ).isEqualTo( 1L ) );
         // Give the duplicate time to be (not) processed, then make sure it still is exactly one.
         await().during( Duration.ofSeconds( 2 ) ).atMost( Duration.ofSeconds( 5 ) ).untilAsserted( () ->
-                assertThat( emailSubjectsFor( "carol@example.com" ) ).hasSize( 1 ) );
+                assertThat( receivedEmails() ).isEqualTo( 1L ) );
         assertThat( jdbc.sql( "SELECT count(*) FROM processed_message WHERE message_id = :id::uuid AND consumer = 'notification.order-events'" )
                 .param( "id", messageId ).query( Integer.class ).single() ).isEqualTo( 1 );
+    }
+
+    // Inventory also consumes order.placed (and, with no lines to reserve, later triggers a "confirmed"
+    // email), so count only the "received" emails - the ones produced by the duplicated message.
+    private long receivedEmails() {
+        return emailSubjectsFor( "carol@example.com" ).stream().filter( s -> s.startsWith( "We received your order" ) ).count();
     }
 
 }
