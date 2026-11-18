@@ -5,7 +5,7 @@ import com.example.outboxdemo.events.StockRejected;
 import com.example.outboxdemo.events.StockReserved;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.modulith.ApplicationModuleListener;
+import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
 

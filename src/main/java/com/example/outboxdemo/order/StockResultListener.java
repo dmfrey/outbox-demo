@@ -2,7 +2,7 @@ package com.example.outboxdemo.order;
 
 import com.example.outboxdemo.events.StockRejected;
 import com.example.outboxdemo.events.StockReserved;
-import org.springframework.modulith.ApplicationModuleListener;
+import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
 /** Closes the loop: the order module learns the outcome of the stock reservation. */

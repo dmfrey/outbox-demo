@@ -4,7 +4,7 @@ import com.example.outboxdemo.events.OrderPlaced;
 import com.example.outboxdemo.events.StockRejected;
 import com.example.outboxdemo.events.StockReserved;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.modulith.ApplicationModuleListener;
+import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
 @Component
