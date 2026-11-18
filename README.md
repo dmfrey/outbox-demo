@@ -18,13 +18,13 @@ sequenceDiagram
     participant I as inventory
     participant N as notification
     C->>O: POST /orders
-    O->>DB: BEGIN; INSERT orders; INSERT outbox_message; COMMIT
+    O->>DB: one transaction: INSERT orders + INSERT outbox_message
     O-->>C: 202 Accepted
     R->>DB: SELECT ... FOR UPDATE SKIP LOCKED
     R->>MQ: publish (wait for confirm)
     R->>DB: UPDATE published_at
     MQ->>I: order.placed
-    I->>DB: BEGIN; INSERT processed_message; reserve stock; INSERT outbox_message; COMMIT
+    I->>DB: one transaction: INSERT processed_message + reserve stock + INSERT outbox_message
     MQ->>N: order.placed / inventory.stock-*
     N->>N: send email (once, thanks to the inbox)
 ```
