@@ -34,7 +34,7 @@ class OrderFlowTest extends AbstractIntegrationTest {
                         .anyMatch( s -> s.endsWith( "is confirmed" ) ) );
 
         assertThat( jdbc.sql( "SELECT available FROM stock WHERE sku = 'BOOK-1'" ).query( Integer.class ).single() ).isEqualTo( 8 );
-        await().untilAsserted( () -> assertThat( jdbc.sql( "SELECT count(*) FROM outbox_message WHERE published_at IS NULL" )
+        await().untilAsserted( () -> assertThat( jdbc.sql( "SELECT count(*) FROM event_publication WHERE completion_date IS NULL" )
                 .query( Integer.class ).single() ).isZero() );
     }
 

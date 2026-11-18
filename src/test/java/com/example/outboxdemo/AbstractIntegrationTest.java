@@ -13,7 +13,7 @@ import tools.jackson.databind.json.JsonMapper;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest( properties = "outbox.relay.poll-interval=200ms" )
+@SpringBootTest
 @Import( TestcontainersConfiguration.class )
 public abstract class AbstractIntegrationTest {
 
@@ -23,7 +23,7 @@ public abstract class AbstractIntegrationTest {
 
     @BeforeEach
     void resetState() {
-        jdbc.sql( "TRUNCATE outbox_message, processed_message, order_line, orders" ).update();
+        jdbc.sql( "TRUNCATE event_publication, order_line, orders" ).update();
         jdbc.sql( "UPDATE stock SET available = CASE sku WHEN 'BOOK-1' THEN 10 WHEN 'MUG-1' THEN 5 ELSE 0 END" ).update();
         mailClient().delete().uri( "/api/v1/messages" ).retrieve().toBodilessEntity();
     }

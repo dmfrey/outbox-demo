@@ -1,30 +1,24 @@
 spring:
   application:
-    name: order-outbox-demo
+    name: outbox-demo
   threads:
     virtual:
       enabled: true
   rabbitmq:
-    # Publisher confirms: the relay waits for the broker to acknowledge each batch before it
-    # marks outbox rows as published. Without this, "send" only means "handed to the client".
+    # Externalisation to RabbitMQ also waits for broker confirms.
     publisher-confirm-type: simple
-    listener:
-      simple:
-        # Retry a failing listener in-process a few times, then reject WITHOUT requeue so the
-        # broker dead-letters the message instead of redelivering it forever.
-        default-requeue-rejected: false
-        retry:
-          enabled: true
-          max-attempts: 3
-          initial-interval: 500ms
   mail:
     host: localhost
     port: 1025
-
-outbox:
-  relay:
-    poll-interval: 1s
-    batch-size: 50
+  modulith:
+    events:
+      jdbc:
+        # Creates the event_publication table - the outbox - at startup.
+        schema-initialization:
+          enabled: true
+      # Incomplete publications (listener failed, or the app died mid-delivery) are re-delivered on
+      # restart. Delivery is therefore at-least-once: listeners should be idempotent.
+      republish-outstanding-events-on-restart: true
 
 logging:
   level:
