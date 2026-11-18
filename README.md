@@ -58,5 +58,15 @@ All run against Testcontainers (Postgres, RabbitMQ, Mailpit). Docker or Podman i
 
 ## Branches
 
-- `main` - hand-rolled outbox, hexagonal.
-- `modulith` (planned) - the same app on Spring Modulith's Event Publication Registry, with the hand-rolled `outbox` module deleted.
+| Branch | What it shows |
+|---|---|
+| `main` (this one) | The outbox built by hand: `outbox_message` table, `Propagation.MANDATORY` writer, a polling relay with `SKIP LOCKED` and publisher confirms, RabbitMQ listeners and an inbox table for idempotent consumers. Hexagonal (ports & adapters) modules. |
+| [`modulith`](../../tree/modulith) | The same scenario on Spring Modulith: the event publication registry replaces the outbox and relay, `@ApplicationModuleListener` replaces the listeners and inbox, `@Externalized` forwards events to RabbitMQ, and module boundaries are verified by a test. Plain packages instead of ports & adapters. |
+
+**Suggested way to learn it:** read this branch first (every moving part is visible), then compare against the framework version: [`main...modulith`](../../compare/main...modulith).
+
+| Concept | Here (`main`) | In `modulith` |
+|---|---|---|
+| Atomic write of state + event | `PlaceOrderService` -> `RecordOutboxMessageService` | `OrderManagement.place` + `publishEvent` |
+| Getting the event to the broker | `OutboxRelay` | `@Externalized` + the registry |
+| Idempotent consumers | `InboxGuard` | at-least-once; listeners must be idempotent |
