@@ -1,0 +1,7 @@
+dependencies {
+	// 'api': this module's public mapper has event types in its signatures.
+	api project(':events')
+
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.modulith:spring-modulith-events-api'
+}

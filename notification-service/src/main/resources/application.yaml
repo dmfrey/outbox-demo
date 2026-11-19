@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: notification-service
+  rabbitmq:
+    listener:
+      simple:
+        # Retry a failing listener a few times, then reject without requeue (the message is dropped
+        # unless a dead-letter exchange is configured on the queue).
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 500ms
+  mail:
+    host: localhost
+    port: 1025
+
+server:
+  port: 8081
+
+# The notification module also ships an in-process (Spring Modulith) listener for use inside the
+# monolith. Here the events arrive over RabbitMQ instead, so it is switched off. (The monolith sets
+# the same property to false when it hands notification over to this service.)
+notification:
+  in-process:
+    enabled: false

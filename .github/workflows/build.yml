@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [ main, modulith ]
+    branches: [ main, modulith, modulith-gradle-modules ]
   pull_request:
 
 jobs:
@@ -17,8 +17,15 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       # Tests use Testcontainers (Postgres, RabbitMQ, Mailpit); Docker is preinstalled on ubuntu-latest.
       - run: ./gradlew build --no-daemon
+      # The shared events library must publish cleanly - and with zero dependencies.
+      - name: Publish events library to the local Maven repository and check its POM
+        run: |
+          ./gradlew :events:publishToMavenLocal --no-daemon
+          POM=~/.m2/repository/com/example/outboxdemo/outbox-demo-events/0.1.0/outbox-demo-events-0.1.0.pom
+          cat "$POM"
+          if grep -q '<dependency>' "$POM"; then echo "events library must have no dependencies"; exit 1; fi
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: test-reports
-          path: build/reports/tests/
+          path: '**/build/reports/tests/'

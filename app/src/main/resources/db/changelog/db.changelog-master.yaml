@@ -1,0 +1,6 @@
+# The application only lists the migrations; each module ships its own inside its jar.
+databaseChangeLog:
+  - include:
+      file: db/changelog/order/001-orders.sql
+  - include:
+      file: db/changelog/inventory/001-stock.sql

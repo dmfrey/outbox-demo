@@ -1,61 +1,50 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '4.1.2'
-	id 'io.spring.dependency-management' version '1.1.7'
-}
-
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
-	}
-}
-
-repositories {
-	mavenCentral()
+	id 'org.springframework.boot' version '4.1.2' apply false
+	id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
 ext {
-	set('springModulithVersion', '2.1.2')
+	modulithVersion = '2.1.2'
 }
 
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.modulith:spring-modulith-bom:${springModulithVersion}"
+allprojects {
+	group = 'com.example.outboxdemo'
+	version = '0.0.1-SNAPSHOT'
+
+	repositories {
+		mavenCentral()
 	}
 }
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-amqp'
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-liquibase'
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	runtimeOnly 'org.postgresql:postgresql'
+subprojects {
+	apply plugin: 'java-library'
 
-	// Spring Modulith: the JDBC event publication registry IS the outbox; events-jackson serialises
-	// events into it; events-amqp externalises events marked @Externalized to RabbitMQ.
-	implementation 'org.springframework.modulith:spring-modulith-starter-jdbc'
-	implementation 'org.springframework.modulith:spring-modulith-events-jackson'
-	implementation 'org.springframework.modulith:spring-modulith-events-amqp'
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(25)
+		}
+	}
 
-	testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
-	testImplementation 'org.springframework.modulith:spring-modulith-docs'
-	testImplementation 'org.springframework.boot:spring-boot-starter-amqp-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-jdbc-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-	testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
-	testImplementation 'org.testcontainers:testcontainers-postgresql'
-	testImplementation 'org.testcontainers:testcontainers-rabbitmq'
-	testImplementation 'org.awaitility:awaitility'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	tasks.withType(Test).configureEach {
+		useJUnitPlatform()
+	}
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+// Everything except the 'events' library uses Spring, so it gets the Spring Boot and Spring
+// Modulith version management. 'events' deliberately gets neither: it has no dependencies.
+configure(subprojects.findAll { it.name != 'events' }) {
+	apply plugin: 'io.spring.dependency-management'
+
+	dependencyManagement {
+		imports {
+			mavenBom SpringBootPlugin.BOM_COORDINATES
+			mavenBom "org.springframework.modulith:spring-modulith-bom:${rootProject.ext.modulithVersion}"
+		}
+	}
+
+	dependencies {
+		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	}
 }

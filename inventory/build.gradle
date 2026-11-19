@@ -1,0 +1,6 @@
+dependencies {
+	implementation project(':events')
+
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.modulith:spring-modulith-events-api'
+}

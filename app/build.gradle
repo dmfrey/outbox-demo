@@ -1,0 +1,36 @@
+plugins {
+	id 'org.springframework.boot'
+}
+
+dependencies {
+	// The monolith is just the modules assembled together.
+	implementation project(':events')
+	implementation project(':order')
+	implementation project(':inventory')
+	implementation project(':notification')
+
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-liquibase'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	runtimeOnly 'org.postgresql:postgresql'
+
+	// The event publication registry is the outbox; events-amqp forwards events to RabbitMQ.
+	implementation 'org.springframework.modulith:spring-modulith-starter-jdbc'
+	implementation 'org.springframework.modulith:spring-modulith-events-jackson'
+	implementation 'org.springframework.modulith:spring-modulith-events-amqp'
+
+	testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
+	testImplementation 'org.springframework.modulith:spring-modulith-docs'
+	testImplementation 'org.springframework.boot:spring-boot-starter-amqp-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-jdbc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+	testImplementation 'org.testcontainers:testcontainers-postgresql'
+	testImplementation 'org.testcontainers:testcontainers-rabbitmq'
+	testImplementation 'org.awaitility:awaitility'
+}

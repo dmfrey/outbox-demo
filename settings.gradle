@@ -1,1 +1,16 @@
 rootProject.name = 'outbox-demo'
+
+// The shared library: plain Java records, no dependencies. Published to a Maven repository.
+include 'events'
+
+// The three application modules. Each is a library that owns its package, its domain types and
+// its database migrations. None of them depends on another module - only on 'events'.
+include 'order'
+include 'inventory'
+include 'notification'
+
+// The monolith: assembles the modules above into one Spring Boot application.
+include 'app'
+
+// A second deployable: the 'notification' module extracted into its own service.
+include 'notification-service'

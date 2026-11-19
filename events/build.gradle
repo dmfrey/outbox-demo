@@ -1,0 +1,39 @@
+plugins {
+	id 'java-library'
+	id 'maven-publish'
+}
+
+// The library is versioned on its own, independently of the applications that use it: a producer
+// and its consumers upgrade to a new version of the contract when *they* are ready.
+version = '0.1.0'
+
+java {
+	withSourcesJar()
+}
+
+// No dependencies at all: the published POM must stay empty so any service, whatever framework it
+// uses, can depend on these records. (CI fails the build if a <dependency> ever appears.)
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifactId = 'outbox-demo-events'
+			from components.java
+			pom {
+				name = 'outbox-demo events'
+				description = 'Shared event contracts (plain Java records) for the outbox-demo order/inventory/notification modules.'
+			}
+		}
+	}
+	repositories {
+		// GitHub Packages shown as an example; any Maven repository (Nexus, Artifactory, ...) works.
+		maven {
+			name = 'GitHubPackages'
+			url = uri('https://maven.pkg.github.com/dmfrey/outbox-demo')
+			credentials {
+				username = System.getenv('GITHUB_ACTOR')
+				password = System.getenv('GITHUB_TOKEN')
+			}
+		}
+	}
+}
