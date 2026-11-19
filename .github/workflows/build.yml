@@ -16,7 +16,7 @@ jobs:
           java-version: '25'
       - uses: gradle/actions/setup-gradle@v4
       # Tests use Testcontainers (Postgres, RabbitMQ, Mailpit); Docker is preinstalled on ubuntu-latest.
-      - run: ./gradlew build --no-daemon
+      - run: ./gradlew build --no-daemon --continue
       # The shared events library must publish cleanly - and with zero dependencies.
       - name: Publish events library to the local Maven repository and check its POM
         run: |

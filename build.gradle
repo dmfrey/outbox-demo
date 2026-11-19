@@ -27,6 +27,12 @@ subprojects {
 		}
 	}
 
+	// The Spring Boot Gradle plugin adds -parameters only to projects it is applied to. The module
+	// libraries do not apply it, yet Spring MVC needs parameter names (e.g. @PathVariable UUID id).
+	tasks.withType(JavaCompile).configureEach {
+		options.compilerArgs.add('-parameters')
+	}
+
 	tasks.withType(Test).configureEach {
 		useJUnitPlatform()
 	}
